@@ -1,1 +1,40 @@
-//- vista de empleados/index
+extends ../layout
+
+block content
+  h2 Gestión de Empleados
+  
+  
+  a(href='/empleados/nuevo' class='btn btn-primary') Nuevo Empleado
+  
+  if empleados && empleados.length > 0
+    .table-responsive
+      table
+        thead
+          tr
+            th ID
+            th Nombre
+            th Email
+            th Rol
+            th Área
+            th Acciones
+        tbody
+          each empleado in empleados
+            tr
+              td= empleado._id || empleado.id
+              td= empleado.nombre
+              td= empleado.email
+              td= empleado.rol && empleado.rol.nombre ? empleado.rol.nombre : 'Sin rol'
+              td= empleado.area && empleado.area.nombre ? empleado.area.nombre : 'Sin área'
+              td
+                a(href=`/empleados/${empleado._id || empleado.id}/editar` class='btn btn-secondary btn-sm') Editar
+                | 
+                form(method='POST' action=`/empleados/${empleado._id || empleado.id}?_method=DELETE` style='display: inline;')
+                  button(type='submit' onclick="return confirm('¿Estás seguro?')" class='btn btn-danger btn-sm') Eliminar
+  else
+    p No hay empleados registrados.
+    
+  if error
+    .alert.alert-danger(role='alert')
+      = error
+  
+  a(href='/' class='btn btn-light') Volver al inicio

@@ -1,1 +1,57 @@
-//- vista de empleados/form
+extends ../layout
+
+block content
+  h2= titulo
+  
+  if empleado
+    form(method='POST' action=`/empleados/${empleado.id}?_method=PUT` class='form')
+      .form-group
+        label(for='nombre') Nombre:
+        input(type='text' id='nombre' name='nombre' value=empleado.nombre required)
+      
+      .form-group
+        label(for='email') Email:
+        input(type='email' id='email' name='email' value=empleado.email required)
+      
+      .form-group
+        label(for='rol') Rol:
+        select(id='rol' name='rol' required)
+          each rol in roles
+            option(value=rol._id selected=rol._id.equals(empleado.rol._id))= rol.nombre
+      
+      .form-group
+        label(for='area') Área:
+        select(id='area' name='area' required)
+          each area in areas
+            option(value=area._id selected=area._id.equals(empleado.area._id))= area.nombre
+      
+      .form-actions
+        button(type='submit' class='btn btn-primary') Actualizar Empleado
+        a(href='/empleados' class='btn btn-light') Cancelar
+  else
+    form(method='POST' action='/empleados' class='form')
+      .form-group
+        label(for='nombre') Nombre:
+        input(type='text' id='nombre' name='nombre' required)
+      
+      .form-group
+        label(for='email') Email:
+        input(type='email' id='email' name='email' required)
+      
+      .form-group
+        label(for='rol') Rol:
+        select(id='rol' name='rol' required)
+          option(value='') Selecciona un rol
+          each rol in roles
+            option(value=rol._id)= rol.nombre
+      
+      .form-group
+        label(for='area') Área:
+        select(id='area' name='area' required)
+          option(value='') Selecciona un área
+          each area in areas
+            option(value=area._id)= area.nombre
+      
+      .form-actions
+        button(type='submit' class='btn btn-primary') Crear Empleado
+        a(href='/empleados' class='btn btn-light') Cancelar

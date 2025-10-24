@@ -1,1 +1,114 @@
-//- vista de tareas/form
+extends ../layout
+
+block content
+  h2= titulo
+  
+  if tarea
+    form(method='POST' action=`/tareas/${tarea.id}?_method=PUT` class='tarea-form')
+      .form-row
+        .form-group
+          label(for='titulo') Título:
+          input(type='text' id='titulo' name='titulo' value=tarea.titulo required)
+        
+        .form-group
+          label(for='estado') Estado:
+          select(id='estado' name='estado' required)
+            each estado in estados
+              option(value=estado selected=estado === tarea.estado)= estado.charAt(0).toUpperCase() + estado.slice(1)
+      
+      .form-group
+        label(for='descripcion') Descripción:
+        textarea(id='descripcion' name='descripcion' rows='3')= tarea.descripcion
+      
+      .form-row
+        .form-group
+          label(for='prioridad') Prioridad:
+          select(id='prioridad' name='prioridad' required)
+            each prioridad in prioridades
+              option(value=prioridad selected=prioridad === tarea.prioridad)= prioridad.charAt(0).toUpperCase() + prioridad.slice(1)
+        
+        .form-group
+          label(for='empleado') Empleado Asignado:
+          select(id='empleado' name='empleado' required)
+            option(value='') Selecciona un empleado
+            each empleado in empleados
+              option(value=empleado._id selected=tarea && tarea.empleado && empleado._id.equals(tarea.empleado._id))= empleado.nombre
+      
+      .form-row
+        .form-group
+          label(for='evento') Evento:
+          select(id='evento' name='evento' required)
+            option(value='') Selecciona un evento
+            each evento in eventos
+              option(value=evento._id selected=tarea && tarea.evento && evento._id.equals(tarea.evento._id))= evento.nombre
+        
+        .form-group
+          label(for='horasEstimadas') Horas Estimadas:
+          input(type='number' id='horasEstimadas' name='horasEstimadas' value=tarea.horasEstimadas min='1' required)
+      
+      .form-row
+        .form-group
+          label(for='fechaInicio') Fecha de Inicio:
+          input(type='date' id='fechaInicio' name='fechaInicio' value=(tarea.fechaInicio ? tarea.fechaInicio.toISOString().split('T')[0] : '') required)
+        
+        .form-group
+          label(for='fechaFin') Fecha de Fin:
+          input(type='date' id='fechaFin' name='fechaFin' value=(tarea.fechaFin ? tarea.fechaFin.toISOString().split('T')[0] : '') required)
+      
+      .form-group
+        label(for='horasReales') Horas Reales Trabajadas:
+        input(type='number' id='horasReales' name='horasReales' value=tarea.horasReales || 0 min='0')
+      
+      .form-actions
+        button(type='submit' class='btn btn-primary') Actualizar Tarea
+        a(href='/tareas' class='btn btn-secondary') Cancelar
+        
+  else
+    form(method='POST' action='/tareas' class='tarea-form')
+      .form-row
+        .form-group
+          label(for='titulo') Título:
+          input(type='text' id='titulo' name='titulo' required)
+        
+        .form-group
+          label(for='prioridad') Prioridad:
+          select(id='prioridad' name='prioridad' required)
+            option(value='') Selecciona prioridad
+            each prioridad in prioridades
+              option(value=prioridad)= prioridad.charAt(0).toUpperCase() + prioridad.slice(1)
+      
+      .form-group
+        label(for='descripcion') Descripción:
+        textarea(id='descripcion' name='descripcion' rows='3')
+      
+      .form-row
+        .form-group
+          label(for='empleado') Empleado Asignado:
+          select(id='empleado' name='empleado' required)
+            option(value='') Selecciona un empleado
+            each empleado in empleados
+              option(value=empleado._id)= empleado.nombre
+        
+        .form-group
+          label(for='evento') Evento:
+          select(id='evento' name='evento' required)
+            option(value='') Selecciona un evento
+            each evento in eventos
+              option(value=evento._id)= evento.nombre
+      
+      .form-row
+        .form-group
+          label(for='fechaInicio') Fecha de Inicio:
+          input(type='date' id='fechaInicio' name='fechaInicio' required)
+        
+        .form-group
+          label(for='fechaFin') Fecha de Fin:
+          input(type='date' id='fechaFin' name='fechaFin' required)
+      
+      .form-group
+        label(for='horasEstimadas') Horas Estimadas:
+        input(type='number' id='horasEstimadas' name='horasEstimadas' min='1' required)
+      
+      .form-actions
+        button(type='submit' class='btn btn-primary') Crear Tarea
+        a(href='/tareas' class='btn btn-secondary') Cancelar

@@ -1,1 +1,92 @@
-//- vista de tareas/index
+extends ../layout
+
+block content
+  h2 Gestión de Tareas
+  
+  .actions
+    a(href='/tareas/nueva' class='btn btn-primary') Nueva Tarea
+  
+  // Filtros
+  .filtros
+    h3 Filtros
+    form(method='GET' action='/tareas')
+      .filtros-row
+        div
+          label Estado:
+          select(name='estado')
+            option(value='') Todos
+            option(value='pendiente' selected=filtros.estado === 'pendiente') Pendiente
+            option(value='en proceso' selected=filtros.estado === 'en proceso') En Proceso
+            option(value='finalizada' selected=filtros.estado === 'finalizada') Finalizada
+        
+        div
+          label Prioridad:
+          select(name='prioridad')
+            option(value='') Todas
+            option(value='alta' selected=filtros.prioridad === 'alta') Alta
+            option(value='media' selected=filtros.prioridad === 'media') Media
+            option(value='baja' selected=filtros.prioridad === 'baja') Baja
+        
+        div
+          label Empleado:
+          select(name='empleadoId')
+            option(value='') Todos
+            each empleado in empleados
+              option(value=empleado.id selected=filtros.empleadoId == empleado.id)= empleado.nombre
+        
+        div
+          label Evento:
+          select(name='eventoId')
+            option(value='') Todos
+            each evento in eventos
+              option(value=evento.id selected=filtros.eventoId == evento.id)= evento.nombre
+      
+      .filtros-actions
+        button(type='submit' class='btn btn-secondary') Filtrar
+        a(href='/tareas' class='btn btn-light') Limpiar filtros
+
+  // Lista de tareas
+  if tareas && tareas.length > 0
+    .tareas-grid
+      each tarea in tareas
+        - const empleado = tarea.empleado
+        - const evento = tarea.evento
+        
+        .tarea-card(class=`prioridad-${tarea.prioridad} estado-${tarea.estado.replace(' ', '-')}`)
+          .tarea-header
+            h4= tarea.titulo
+            .badges
+              span(class=`badge badge-${tarea.prioridad}`)= tarea.prioridad.toUpperCase()
+              span(class=`badge badge-${tarea.estado.replace(' ', '-')}`)= tarea.estado.toUpperCase()
+          
+          .tarea-body
+            p= tarea.descripcion
+            
+            .tarea-info
+              p 
+                strong Empleado: 
+                = empleado && empleado.nombre ? empleado.nombre : 'Sin asignar'
+              p 
+                strong Evento: 
+                = evento && evento.nombre ? evento.nombre : 'Sin evento'
+              p 
+                strong Fechas: 
+                = new Date(tarea.fechaInicio).toLocaleDateString()
+                |  - 
+                = new Date(tarea.fechaFin).toLocaleDateString()
+              p 
+                strong Horas: 
+                = tarea.horasReales || 0
+                | /
+                = tarea.horasEstimadas
+          
+          .tarea-actions
+            a(href=`/tareas/${tarea.id}/editar` class='btn btn-secondary btn-sm') Editar
+            form(method='POST' action=`/tareas/${tarea.id}?_method=DELETE` style='display: inline;')
+              button(type='submit' onclick="return confirm('¿Estás seguro?')" class='btn btn-sm btn-danger') Eliminar
+  else
+    .no-tareas
+      p No hay tareas que coincidan con los filtros aplicados.
+      a(href='/tareas/nueva' class='btn btn-primary') Crear primera tarea
+    
+  a(href='/' class='btn btn-light') Volver al inicio

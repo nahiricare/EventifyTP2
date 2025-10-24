@@ -11,9 +11,38 @@ const PORT = process.env.PORT || 3000;
 app.set("view engine", "pug");
 app.set("views", path.join(__dirname, "src/views"));
 
-/*
- * Espacio para importacion de rutas / middlewares
-*/
+// NAHIR -> Middlewares
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+app.use(express.static(path.join(__dirname, "public")));
+app.use(methodOverride("_method"));
+
+// NAHIR -> Middleware personalizado para logging
+app.use((req, res, next) => {
+  console.log(`${new Date().toISOString()} - ${req.method} ${req.url}`);
+  next();
+});
+
+// NAHIR -> Middleware de manejo de errores
+app.use((err, req, res, next) => {
+  console.error(err.stack);
+  res.status(500).render("error", {
+    titulo: "Error del Servidor",
+    mensaje:
+      process.env.NODE_ENV !== "production"
+        ? err.message
+        : "Ha ocurrido un error interno",
+  });
+});
+
+// NAHIR -> Middleware para rutas no encontradas
+app.use((req, res) => {
+  res.status(404).render("error", {
+    titulo: "Página no encontrada",
+    mensaje: "La página que buscas no existe",
+  });
+});
+
 
 const server = app.listen(PORT, () => {
   console.log(` Servidor de Eventify corriendo en http://localhost:${PORT}`);
